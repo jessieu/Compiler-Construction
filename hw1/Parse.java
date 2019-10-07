@@ -1,13 +1,17 @@
 // An LL1 Recursive Descent Parser
 // Reference: http://www.cs.nott.ac.uk/~psztxa/g51mal/ParseE0.java
-import java.util.*;
+// import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class Parser extends Scanner {
 
-static Scanner s = new Scanner();
+public class Parse extends Tokenizer {
+
+static Tokenizer tok = new Tokenizer();
 // current symbol in the input string
 static String current;
 
@@ -101,23 +105,20 @@ public static void parseE() {
 }
 
 public static void main(String[] args) throws IOException {
-        StringBuilder sb = new StringBuilder();
+        List<String> inStr = new ArrayList<String>();
         String temp;
         BufferedReader r =
                 new BufferedReader(new InputStreamReader(System.in));
 
         // Read inputs into stringbuilder
         while ((temp = r.readLine()) != null) {
-                sb.append(temp);
+            String[] sp = temp.split(" ");
+            for (String st : sp){
+                inStr.add(st);
+            }
         }
 
-        String inStr = sb.toString();
-
-        tokens = s.scan(inStr);
-
-        for (String t : tokens){
-            System.out.println(t);
-        }
+        tokens = tok.getTokens(inStr);
 
         // indicate the end of input
         tokens.add("$");
