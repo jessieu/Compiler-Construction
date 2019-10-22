@@ -1,57 +1,13 @@
 import syntaxtree.*;
+import visitor.*;
+import symboltable.*;
 import java.util.*;
 
 /**
  * Provides default methods which visit each node in the tree in depth-first
  * order.  Your visitors may extend this class.
  */
-public class TypeCheckVisitor extends GJVisitor<String,TypeInfo> {
-    //
-    // Auto class visitors--probably don't need to be overridden.
-    //
-    public String visit(NodeList n, TypeInfo argu) {
-        String _ret=null;
-        int _count=0;
-        for ( Enumeration<Node> e = n.elements(); e.hasMoreElements(); ) {
-            e.nextElement().accept(this,argu);
-            _count++;
-        }
-        return _ret;
-    }
-
-    public String visit(NodeListOptional n, TypeInfo argu) {
-        if ( n.present() ) {
-            String _ret=null;
-            int _count=0;
-            for ( Enumeration<Node> e = n.elements(); e.hasMoreElements(); ) {
-                e.nextElement().accept(this,argu);
-                _count++;
-            }
-            return _ret;
-        }
-        else
-            return null;
-    }
-
-    public String visit(NodeOptional n, TypeInfo argu) {
-        if ( n.present() )
-            return n.node.accept(this,argu);
-        else
-            return null;
-    }
-
-    public String visit(NodeSequence n, TypeInfo argu) {
-        String _ret=null;
-        int _count=0;
-        for ( Enumeration<Node> e = n.elements(); e.hasMoreElements(); ) {
-            e.nextElement().accept(this,argu);
-            _count++;
-        }
-        return _ret;
-    }
-
-    public String visit(NodeToken n, TypeInfo argu) { return null; }
-
+public class TypeCheckVisitor extends GJDepthFirst<String,TypeInfo> {
     //
     // User-generated visitor methods below
     //
@@ -89,6 +45,9 @@ public class TypeCheckVisitor extends GJVisitor<String,TypeInfo> {
      * f16 -> "}"
      * f17 -> "}"
      */
+
+    // To do: pass the main method to varDeclaration & Statement()
+    // Typecheck them later
     public String visit(MainClass n, TypeInfo argu) {
         String _ret=null;
         n.f0.accept(this, argu);
@@ -96,14 +55,8 @@ public class TypeCheckVisitor extends GJVisitor<String,TypeInfo> {
         SymbolTable st = SymbolTable.getInstance();
         String className = n.f1.f0.toString();
         ClassInfo classTable = st.lookUp(className);
-        if (classTable == null) {
-            System.out.println("Class ERROR");
-        }else{
-            MethodsInfo mTable = classTable.getMethod("main");
-            if (mTable == null){
-                System.out.println("Main Method ERROR");
-            }
-        }
+        MethodsInfo mTable = classTable.getMethod("main");
+
         n.f2.accept(this, argu);
         n.f3.accept(this, argu);
         n.f4.accept(this, argu);
@@ -144,11 +97,12 @@ public class TypeCheckVisitor extends GJVisitor<String,TypeInfo> {
     public String visit(ClassDeclaration n, TypeInfo argu) {
         String _ret=null;
         n.f0.accept(this, argu);
+        // we check the repetition when add it to symboltable
+        // no need to check again, just pass it down
         String className = n.f1.toString();
+        SymbolTable st = SymbolTable.getInstance();
         ClassInfo classTable = st.lookUp(className);
-        if (classTable == null) {
-            System.out.println("Class ERROR");
-        }
+
         n.f1.accept(this, argu);
         n.f2.accept(this, argu);
         n.f3.accept(this, classTable);
@@ -167,11 +121,18 @@ public class TypeCheckVisitor extends GJVisitor<String,TypeInfo> {
      * f6 -> ( MethodDeclaration() )*
      * f7 -> "}"
      */
+
+    // To do: check parent class exist or not
+    //        check overloading
+    //        check acylical
     public String visit(ClassExtendsDeclaration n, TypeInfo argu) {
         String _ret=null;
         n.f0.accept(this, argu);
+
         String className = n.f1.toString();
+        SymbolTable st = SymbolTable.getInstance();
         ClassInfo classTable = st.lookUp(className);
+
         if (classTable == null) {
             System.out.println("Class ERROR");
         }
@@ -179,12 +140,18 @@ public class TypeCheckVisitor extends GJVisitor<String,TypeInfo> {
         n.f2.accept(this, argu);
         String parentName = n.f2.toString();
         ClassInfo parentClassTable = st.lookUp(parentName);
+        // parent exists or not
         if (parentClassTable == null){
             System.out.println("ClassExtendDeclaration ERROR");
-            classTable.setParentName(null);
+            classTable.setParent(null);
         }
+        // inherience cycle
         if (!st.acyclic(className, parentName)){
             System.out.println("Cylical Class ERROR");
+        }
+        // overloading
+        if (st.isOverloading(className, parentName)){
+            System.out.println("Class Overloading ERROR");
         }
         n.f3.accept(this, argu);
         n.f4.accept(this, argu);
@@ -199,6 +166,7 @@ public class TypeCheckVisitor extends GJVisitor<String,TypeInfo> {
      * f1 -> Identifier()
      * f2 -> ";"
      */
+    // repetition check done in building symbol table
     public String visit(VarDeclaration n, TypeInfo argu) {
         String _ret=null;
         n.f0.accept(this, argu);
@@ -222,19 +190,24 @@ public class TypeCheckVisitor extends GJVisitor<String,TypeInfo> {
      * f11 -> ";"
      * f12 -> "}"
      */
+    // To do: check method type and return statement type
     public String visit(MethodDeclaration n, TypeInfo argu) {
         String _ret=null;
         n.f0.accept(this, argu);
-        n.f1.accept(this, argu);
-        n.f2.accept(this, argu);
+        String methodType = n.f1.accept(this, argu);
+        String methodName = n.f2.accept(this, argu); // remember to modify the identifier()
+        MethodsInfo mTable = ((ClassInfo)argu).getMethod(methodName);
         n.f3.accept(this, argu);
-        n.f4.accept(this, argu);
+        n.f4.accept(this, mTable);
         n.f5.accept(this, argu);
         n.f6.accept(this, argu);
-        n.f7.accept(this, argu);
+        n.f7.accept(this, mTable);
         n.f8.accept(this, argu);
         n.f9.accept(this, argu);
-        n.f10.accept(this, argu);
+        String returnType = n.f10.accept(this, argu); //modify expression()
+        if (!methodType.equals(returnType)){
+            System.out.println("Mathod Return Type ERROR");
+        }
         n.f11.accept(this, argu);
         n.f12.accept(this, argu);
         return _ret;
@@ -255,6 +228,7 @@ public class TypeCheckVisitor extends GJVisitor<String,TypeInfo> {
      * f0 -> Type()
      * f1 -> Identifier()
      */
+    // parameter name checked in building symbol table
     public String visit(FormalParameter n, TypeInfo argu) {
         String _ret=null;
         n.f0.accept(this, argu);
@@ -279,9 +253,10 @@ public class TypeCheckVisitor extends GJVisitor<String,TypeInfo> {
      *       | IntegerType()
      *       | Identifier()
      */
+    // pass the type upward
     public String visit(Type n, TypeInfo argu) {
         String _ret=null;
-        n.f0.accept(this, argu);
+        _ret = n.f0.accept(this, argu);
         return _ret;
     }
 
@@ -292,9 +267,10 @@ public class TypeCheckVisitor extends GJVisitor<String,TypeInfo> {
      */
     public String visit(ArrayType n, TypeInfo argu) {
         String _ret=null;
-        n.f0.accept(this, argu);
-        n.f1.accept(this, argu);
-        n.f2.accept(this, argu);
+        _ret = "ARRAY";
+//        n.f0.accept(this, argu);
+//        n.f1.accept(this, argu);
+//        n.f2.accept(this, argu);
         return _ret;
     }
 
@@ -303,7 +279,8 @@ public class TypeCheckVisitor extends GJVisitor<String,TypeInfo> {
      */
     public String visit(BooleanType n, TypeInfo argu) {
         String _ret=null;
-        n.f0.accept(this, argu);
+        _ret = "BOOLEAN";
+        //n.f0.accept(this, argu);
         return _ret;
     }
 
@@ -312,7 +289,8 @@ public class TypeCheckVisitor extends GJVisitor<String,TypeInfo> {
      */
     public String visit(IntegerType n, TypeInfo argu) {
         String _ret=null;
-        n.f0.accept(this, argu);
+        _ret = "INTEGER";
+        //n.f0.accept(this, argu);
         return _ret;
     }
 
@@ -349,12 +327,31 @@ public class TypeCheckVisitor extends GJVisitor<String,TypeInfo> {
      * f2 -> Expression()
      * f3 -> ";"
      */
+    // To do: check whether the variable name declared or not
+    //        check whether the type of left and right match
     public String visit(AssignmentStatement n, TypeInfo argu) {
         String _ret=null;
-        n.f0.accept(this, argu);
+        String id = n.f0.accept(this, argu); //identifier() returns name
+        // get the type of id
+        String idType;
         n.f1.accept(this, argu);
-        n.f2.accept(this, argu);
+        String exprType = n.f2.accept(this, argu);
+
+        if (argu instanceof MethodsInfo){
+            idType = ((MethodsInfo)argu).isIntialized(id);
+            if (idType == null){
+                System.out.println("Identifier not initialized");
+            }else {
+                if (!idType.equals(exprType)){
+                    System.out.println("Assignment type not match");
+            }
+            }
+        }
+
         n.f3.accept(this, argu);
+
+        SymbolTable st = SymbolTable.getInstance();
+
         return _ret;
     }
 
@@ -367,9 +364,12 @@ public class TypeCheckVisitor extends GJVisitor<String,TypeInfo> {
      * f5 -> Expression()
      * f6 -> ";"
      */
+    // To do: get identifier type
+    //        [experssion] type must be int
+    //        expression must be the same as identifier type
     public String visit(ArrayAssignmentStatement n, TypeInfo argu) {
         String _ret=null;
-        n.f0.accept(this, argu);
+        String idType = n.f0.accept(this, argu);  //change identifier return value?
         n.f1.accept(this, argu);
         n.f2.accept(this, argu);
         n.f3.accept(this, argu);
@@ -458,9 +458,10 @@ public class TypeCheckVisitor extends GJVisitor<String,TypeInfo> {
      */
     public String visit(AndExpression n, TypeInfo argu) {
         String _ret=null;
-        n.f0.accept(this, argu);
-        n.f1.accept(this, argu);
-        n.f2.accept(this, argu);
+//        n.f0.accept(this, argu);
+//        n.f1.accept(this, argu);
+//        n.f2.accept(this, argu);
+        _ret = "BOOLEAN";
         return _ret;
     }
 
@@ -471,9 +472,10 @@ public class TypeCheckVisitor extends GJVisitor<String,TypeInfo> {
      */
     public String visit(CompareExpression n, TypeInfo argu) {
         String _ret=null;
-        n.f0.accept(this, argu);
-        n.f1.accept(this, argu);
-        n.f2.accept(this, argu);
+        _ret = "BOOLEAN";
+//        n.f0.accept(this, argu);
+//        n.f1.accept(this, argu);
+//        n.f2.accept(this, argu);
         return _ret;
     }
 
@@ -484,9 +486,10 @@ public class TypeCheckVisitor extends GJVisitor<String,TypeInfo> {
      */
     public String visit(PlusExpression n, TypeInfo argu) {
         String _ret=null;
-        n.f0.accept(this, argu);
-        n.f1.accept(this, argu);
-        n.f2.accept(this, argu);
+        _ret = "INTEGER";
+//        n.f0.accept(this, argu);
+//        n.f1.accept(this, argu);
+//        n.f2.accept(this, argu);
         return _ret;
     }
 
@@ -497,9 +500,10 @@ public class TypeCheckVisitor extends GJVisitor<String,TypeInfo> {
      */
     public String visit(MinusExpression n, TypeInfo argu) {
         String _ret=null;
-        n.f0.accept(this, argu);
-        n.f1.accept(this, argu);
-        n.f2.accept(this, argu);
+        _ret = "INTEGER";
+//        n.f0.accept(this, argu);
+//        n.f1.accept(this, argu);
+//        n.f2.accept(this, argu);
         return _ret;
     }
 
@@ -510,9 +514,10 @@ public class TypeCheckVisitor extends GJVisitor<String,TypeInfo> {
      */
     public String visit(TimesExpression n, TypeInfo argu) {
         String _ret=null;
-        n.f0.accept(this, argu);
-        n.f1.accept(this, argu);
-        n.f2.accept(this, argu);
+        _ret = "INTEGER";
+//        n.f0.accept(this, argu);
+//        n.f1.accept(this, argu);
+//        n.f2.accept(this, argu);
         return _ret;
     }
 
@@ -524,10 +529,11 @@ public class TypeCheckVisitor extends GJVisitor<String,TypeInfo> {
      */
     public String visit(ArrayLookup n, TypeInfo argu) {
         String _ret=null;
-        n.f0.accept(this, argu);
-        n.f1.accept(this, argu);
-        n.f2.accept(this, argu);
-        n.f3.accept(this, argu);
+        _ret = "ARRAY";
+//        n.f0.accept(this, argu);
+//        n.f1.accept(this, argu);
+//        n.f2.accept(this, argu);
+//        n.f3.accept(this, argu);
         return _ret;
     }
 
@@ -538,9 +544,10 @@ public class TypeCheckVisitor extends GJVisitor<String,TypeInfo> {
      */
     public String visit(ArrayLength n, TypeInfo argu) {
         String _ret=null;
-        n.f0.accept(this, argu);
-        n.f1.accept(this, argu);
-        n.f2.accept(this, argu);
+        _ret = "INTEGER";
+//        n.f0.accept(this, argu);
+//        n.f1.accept(this, argu);
+//        n.f2.accept(this, argu);
         return _ret;
     }
 

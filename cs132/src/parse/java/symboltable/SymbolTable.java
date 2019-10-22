@@ -39,6 +39,16 @@ public class SymbolTable {
         return false;
     }
 
+    public boolean isSubtype(String child, String parent){
+        while (child != parent) {
+            ClassInfo childClass = lookUp(child);
+            child = childClass.getParentClassName();
+            if (child == null)
+                return false;
+        }
+        return true;
+    }
+
     // Add the new scope into symTable
     // check the name in the first table
     // if not exist, create a new one and insert to the first table of the list
@@ -85,8 +95,46 @@ public class SymbolTable {
                     return false;
                 }
             }
-            return true;
         }
+        return true;
+    }
+
+    // if there's a function name in child the same as the parent's
+    // the return type and the parameter list must be the same
+    public boolean isOverloading(String className, String parentClassName){
+        // get the class information
+        HashMap<String, MethodsInfo> m1 = ((ClassInfo)lookUp(className)).memberMethods;
+        HashMap<String, MethodsInfo> m2 = ((ClassInfo)lookUp(parentClassName)).memberMethods;
+
+        // traverse c1's method and c2's
+        // if there are same name methods
+        // check the length of their parameter lists
+        // must be the same lenght, then check each parameter type in order
+        for (String childName : m1.keySet()){
+            for (String parentName : m2.keySet()){
+                if (childName.equals(parentName)){
+                    HashMap<String, TypeInfo> childParams = (m1.get(childName)).getParams();
+                    HashMap<String, TypeInfo> parentParams = (m2.get(childName)).getParams();
+                    if (childParams.size() != parentParams.size()){
+                        return true; // overloading
+                    }else { // check parameter type
+                        List<TypeInfo> child = new ArrayList<TypeInfo>(childParams.values());
+                        List<TypeInfo> parent = new ArrayList<TypeInfo>(parentParams.values());
+
+                        for (int i = 0; i < child.size(); i++){
+                            if ((child.get(i).getTypeName()).equals(parent.get(i).getTypeName())){
+                                continue;
+                            }else {
+                                return true; // type not match => overloading
+                            }
+
+                        }
+
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     public void printTable() {

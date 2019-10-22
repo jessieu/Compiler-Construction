@@ -49,7 +49,6 @@ public class ClassInfo extends TypeInfo{
             memberMethods.put(methodTable.getName(), methodTable);
             return true;
         }
-
         return false;
     }
 
@@ -59,7 +58,6 @@ public class ClassInfo extends TypeInfo{
             return true;
         }
         return false;
-
     }
 
     public void printClass(){

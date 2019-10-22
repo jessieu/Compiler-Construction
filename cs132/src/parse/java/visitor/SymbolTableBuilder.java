@@ -9,55 +9,6 @@ import java.io.*;
  * Will check classes, methods, and variables name repeated.
  */
 public class SymbolTableBuilder extends GJDepthFirst<String,TypeInfo> {
-//    //
-//    // Auto class visitors--probably don't need to be overridden.
-//    //
-//    public String visit(NodeList n, TypeInfo argu) {
-//        String _ret=null;
-//        int _count=0;
-//        for ( Enumeration<Node> e = n.elements(); e.hasMoreElements(); ) {
-//            e.nextElement().accept(this,argu);
-//            _count++;
-//        }
-//        return _ret;
-//    }
-//
-//    public String visit(NodeListOptional n, TypeInfo argu) {
-//        if ( n.present() ) {
-//            String _ret=null;
-//            int _count=0;
-//            for ( Enumeration<Node> e = n.elements(); e.hasMoreElements(); ) {
-//                e.nextElement().accept(this,argu);
-//                _count++;
-//            }
-//            return _ret;
-//        }
-//        else
-//            return null;
-//    }
-//
-//    public String visit(NodeOptional n, TypeInfo argu) {
-//        if ( n.present() )
-//            return n.node.accept(this,argu);
-//        else
-//            return null;
-//    }
-//
-//    public String visit(NodeSequence n, TypeInfo argu) {
-//        String _ret=null;
-//        int _count=0;
-//        for ( Enumeration<Node> e = n.elements(); e.hasMoreElements(); ) {
-//            e.nextElement().accept(this,argu);
-//            _count++;
-//        }
-//        return _ret;
-//    }
-//
-//    public String visit(NodeToken n, TypeInfo argu) { return null; }
-
-    //
-    // User-generated visitor methods below
-    //
 
     /**
      * f0 -> MainClass()
@@ -270,7 +221,7 @@ public class SymbolTableBuilder extends GJDepthFirst<String,TypeInfo> {
         String _ret=null;
         String varType = n.f0.accept(this, argu);
         String varName = n.f1.f0.toString();
-        if(!((MethodsInfo)argu).addLocals(varName, new TypeInfo(varType))){
+        if(!((MethodsInfo)argu).addParams(varName, new TypeInfo(varType))){
             System.out.println("FormalParameter ERROR");
         }
         return _ret;
