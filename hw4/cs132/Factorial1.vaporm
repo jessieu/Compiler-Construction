@@ -1,0 +1,51 @@
+> Task :compileParseJava NO-SOURCE
+> Task :processParseResources NO-SOURCE
+> Task :parseClasses UP-TO-DATE
+
+> Task :compileJava
+
+> Task :processResources NO-SOURCE
+> Task :classes
+
+> Task :run
+:Fac.ComputeFac
+const vmt_Fac
+      :Fac.ComputeFac
+func Main[in 0, out 0, local 0]
+      $t0 = HeapAllocZ( 4)
+      $t1 = :vmt_Fac
+      [$t0] = $t1
+      if $t0 goto :null1
+      Error( "null pointer")
+      null1:
+      $t2 = [$t0]
+      $t2 = [$t2]
+      $a0 = $t0
+      $a1 = 10
+      call $t2
+      $t3 = $v0
+      PrintIntS( $t3)
+      ret
+func Fac.ComputeFac[in 0, out 0, local 0]
+      $t0 = $a0
+      $t1 = $a1
+      $t2 = LtS( $t1 1)
+      if0 $t2 goto :if1_else
+      $t3 = 1
+      goto :if1_end
+      if1_else:
+      $t4 = [$t0]
+      $t4 = [$t4]
+      $t5 = Sub( $t1 1)
+      $a0 = $t0
+      $a1 = $t5
+      call $t4
+      $t6 = $v0
+      $t3 = MulS( $t1 $t6)
+      if1_end:
+      $t7 = $t3
+      $v0 = $t7
+      ret
+
+BUILD SUCCESSFUL in 1s
+2 actionable tasks: 2 executed

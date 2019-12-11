@@ -1,0 +1,346 @@
+const vmt_LS
+  :LS.Start
+  :LS.Print
+  :LS.Search
+  :LS.Init
+func Main[in 0, out 0, local 3]
+
+
+    $t0 = HeapAllocZ( 12 )
+    local[0] = $t0
+    $t0 = local[0]
+    [$t0] = :vmt_LS
+    $t0 = local[0]
+    if $t0 goto :null1
+      Error( "null pointer" )
+    null1:
+      $t0 = local[0]
+      $t1 = [$t0]
+      local[1] = $t1
+      $t0 = local[1]
+      $t1 = [$t0]
+      local[1] = $t1
+      $t0 = local[0]
+      $a0 = $t0
+      $a1 = 10
+      $t1 = local[1]
+      call $t1
+      local[2] = $v0
+      $t0 = local[2]
+      PrintIntS( $t0 )
+      ret
+func LS.Start[in 0, out 0, local 14]
+  local[0] = $a0
+  local[1] = $a1
+  $t0 = local[0]
+  $t1 = [$t0]
+  local[2] = $t1
+  $t0 = local[2]
+  $t1 = [$t0 + 12]
+  local[2] = $t1
+  $t0 = local[0]
+  $a0 = $t0
+  $t1 = local[1]
+  $a1 = $t1
+  $t2 = local[2]
+  call $t2
+  local[3] = $v0
+  $t0 = local[0]
+  $t1 = [$t0]
+  local[4] = $t1
+  $t0 = local[4]
+  $t1 = [$t0 + 4]
+  local[4] = $t1
+  $t0 = local[0]
+  $a0 = $t0
+  $t1 = local[4]
+  call $t1
+  local[5] = $v0
+  PrintIntS( 9999 )
+  $t0 = local[0]
+  $t1 = [$t0]
+  local[6] = $t1
+  $t0 = local[6]
+  $t1 = [$t0 + 8]
+  local[6] = $t1
+  $t0 = local[0]
+  $a0 = $t0
+  $a1 = 8
+  $t1 = local[6]
+  call $t1
+  local[7] = $v0
+  $t0 = local[7]
+  PrintIntS( $t0 )
+  $t0 = local[0]
+  $t1 = [$t0]
+  local[8] = $t1
+  $t0 = local[8]
+  $t1 = [$t0 + 8]
+  local[8] = $t1
+  $t0 = local[0]
+  $a0 = $t0
+  $a1 = 12
+  $t1 = local[8]
+  call $t1
+  local[9] = $v0
+  $t0 = local[9]
+  PrintIntS( $t0 )
+  $t0 = local[0]
+  $t1 = [$t0]
+  local[10] = $t1
+  $t0 = local[10]
+  $t1 = [$t0 + 8]
+  local[10] = $t1
+  $t0 = local[0]
+  $a0 = $t0
+  $a1 = 17
+  $t1 = local[10]
+  call $t1
+  local[11] = $v0
+  $t0 = local[11]
+  PrintIntS( $t0 )
+  $t0 = local[0]
+  $t1 = [$t0]
+  local[12] = $t1
+  $t0 = local[12]
+  $t1 = [$t0 + 8]
+  local[12] = $t1
+  $t0 = local[0]
+  $a0 = $t0
+  $a1 = 50
+  $t1 = local[12]
+  call $t1
+  local[13] = $v0
+  $t0 = local[13]
+  PrintIntS( $t0 )
+  $v0 = 55
+  ret
+func LS.Print[in 0, out 0, local 7]
+  local[0] = $a0
+  local[1] = 1
+while1_top:
+  $t0 = local[0]
+  $t1 = [$t0 + 8]
+  local[2] = $t1
+  $t0 = local[1]
+  $t1 = local[2]
+  $t2 = LtS( $t0 $t1 )
+  local[3] = $t2
+  $t0 = local[3]
+  if0 $t0 goto :while1_end
+    $t0 = local[0]
+    $t1 = [$t0 + 4]
+    local[4] = $t1
+    $t0 = local[4]
+    if $t0 goto :null2
+      Error( "null pointer" )
+    null2:
+      $t0 = local[4]
+      $t1 = [$t0]
+      local[5] = $t1
+      $t0 = local[1]
+      $t1 = local[5]
+      $t2 = Lt( $t0 $t1 )
+      local[5] = $t2
+      $t0 = local[5]
+      if $t0 goto :bounds1
+        Error( "array index out of bounds" )
+      bounds1:
+        $t0 = local[1]
+        $t1 = MulS( $t0 4 )
+        local[5] = $t1
+        $t0 = local[5]
+        $t1 = local[4]
+        $t2 = Add( $t0 $t1 )
+        local[5] = $t2
+        $t0 = local[5]
+        $t1 = [$t0 + 4]
+        local[6] = $t1
+        $t0 = local[6]
+        PrintIntS( $t0 )
+        $t0 = local[1]
+        $t1 = Add( $t0 1 )
+        local[1] = $t1
+        goto :while1_top
+      while1_end:
+        $v0 = 0
+        ret
+func LS.Search[in 0, out 0, local 15]
+  local[0] = $a0
+  local[1] = $a1
+  local[2] = 1
+  local[3] = 0
+  local[4] = 0
+while2_top:
+  $t0 = local[0]
+  $t1 = [$t0 + 8]
+  local[5] = $t1
+  $t0 = local[2]
+  $t1 = local[5]
+  $t2 = LtS( $t0 $t1 )
+  local[6] = $t2
+  $t0 = local[6]
+  if0 $t0 goto :while2_end
+    $t0 = local[0]
+    $t1 = [$t0 + 4]
+    local[7] = $t1
+    $t0 = local[7]
+    if $t0 goto :null3
+      Error( "null pointer" )
+    null3:
+      $t0 = local[7]
+      $t1 = [$t0]
+      local[8] = $t1
+      $t0 = local[2]
+      $t1 = local[8]
+      $t2 = Lt( $t0 $t1 )
+      local[8] = $t2
+      $t0 = local[8]
+      if $t0 goto :bounds2
+        Error( "array index out of bounds" )
+      bounds2:
+        $t0 = local[2]
+        $t1 = MulS( $t0 4 )
+        local[8] = $t1
+        $t0 = local[8]
+        $t1 = local[7]
+        $t2 = Add( $t0 $t1 )
+        local[8] = $t2
+        $t0 = local[8]
+        $t1 = [$t0 + 4]
+        local[9] = $t1
+        $t0 = local[1]
+        $t1 = Add( $t0 1 )
+        local[10] = $t1
+        $t0 = local[9]
+        $t1 = local[1]
+        $t2 = LtS( $t0 $t1 )
+        local[11] = $t2
+        $t0 = local[11]
+        if0 $t0 goto :if1_else
+          local[12] = 0
+          goto :if1_end
+        if1_else:
+          $t0 = local[9]
+          $t1 = local[10]
+          $t2 = LtS( $t0 $t1 )
+          local[13] = $t2
+          $t0 = local[13]
+          $t1 = Sub( 1 $t0 )
+          local[14] = $t1
+          $t0 = local[14]
+          if0 $t0 goto :if2_else
+            local[12] = 0
+            goto :if2_end
+          if2_else:
+            local[3] = 1
+            local[4] = 1
+            $t0 = local[0]
+            $t1 = [$t0 + 8]
+            local[2] = $t1
+          if2_end:
+          if1_end:
+            $t0 = local[2]
+            $t1 = Add( $t0 1 )
+            local[2] = $t1
+            goto :while2_top
+          while2_end:
+            $t0 = local[4]
+            $v0 = $t0
+            ret
+func LS.Init[in 0, out 0, local 13]
+  local[0] = $a0
+  local[1] = $a1
+  $t0 = local[1]
+  $t1 = local[0]
+  [$t1 + 8] = $t0
+  $t0 = local[1]
+  $a0 = $t0
+  $t1 = :AllocArray
+  call $t1
+  local[2] = $v0
+  $t0 = local[2]
+  $t1 = local[0]
+  [$t1 + 4] = $t0
+  local[3] = 1
+  $t0 = local[0]
+  $t1 = [$t0 + 8]
+  local[4] = $t1
+  $t0 = local[4]
+  $t1 = Add( $t0 1 )
+  local[5] = $t1
+while3_top:
+  $t0 = local[0]
+  $t1 = [$t0 + 8]
+  local[6] = $t1
+  $t0 = local[3]
+  $t1 = local[6]
+  $t2 = LtS( $t0 $t1 )
+  local[7] = $t2
+  $t0 = local[7]
+  if0 $t0 goto :while3_end
+    $t0 = local[3]
+    $t1 = MulS( 2 $t0 )
+    local[8] = $t1
+    $t0 = local[5]
+    $t1 = Sub( $t0 3 )
+    local[9] = $t1
+    $t0 = local[0]
+    $t1 = [$t0 + 4]
+    local[10] = $t1
+    $t0 = local[10]
+    if $t0 goto :null4
+      Error( "null pointer" )
+    null4:
+      $t0 = local[10]
+      $t1 = [$t0]
+      local[11] = $t1
+      $t0 = local[3]
+      $t1 = local[11]
+      $t2 = Lt( $t0 $t1 )
+      local[11] = $t2
+      $t0 = local[11]
+      if $t0 goto :bounds3
+        Error( "array index out of bounds" )
+      bounds3:
+        $t0 = local[3]
+        $t1 = MulS( $t0 4 )
+        local[11] = $t1
+        $t0 = local[11]
+        $t1 = local[10]
+        $t2 = Add( $t0 $t1 )
+        local[11] = $t2
+        $t0 = local[8]
+        $t1 = local[9]
+        $t2 = Add( $t0 $t1 )
+        local[12] = $t2
+        $t0 = local[12]
+        $t1 = local[11]
+        [$t1 + 4] = $t0
+        $t0 = local[3]
+        $t1 = Add( $t0 1 )
+        local[3] = $t1
+        $t0 = local[5]
+        $t1 = Sub( $t0 1 )
+        local[5] = $t1
+        goto :while3_top
+      while3_end:
+        $v0 = 0
+        ret
+func AllocArray[in 0, out 0, local 3]
+  local[0] = $a0
+  $t0 = local[0]
+  $t1 = MulS( $t0 4 )
+  local[1] = $t1
+  $t0 = local[1]
+  $t1 = Add( $t0 4 )
+  local[1] = $t1
+  $t0 = local[1]
+  $t1 = HeapAllocZ( $t0 )
+  local[2] = $t1
+  $t0 = local[0]
+  $t1 = local[2]
+  [$t1] = $t0
+  $t0 = local[2]
+  $v0 = $t0
+  ret
